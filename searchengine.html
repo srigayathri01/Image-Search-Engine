@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>My Search engine</title>
+<link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<style type="text/css">
+#sq,#lg-sq,#thumb,#small,#mid,#ori {
+width: 100%
+}
+<link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+var apiurl,myresult,apiurl_size,selected_size,query,flag="0";
+
+$(document).ready(function(){
+$('#button').click(function(){
+if (flag=="1") {
+$("#results").empty();
+flag="0";
+}
+query=document.getElementById("q").value;
+console.log(query);
+apiurl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=ca370d51a054836007519a00ff4ce59e&tags="+query+"&format=json&nojsoncallback=1";
+$.getJSON(apiurl,function(json){
+$.each(json.photos.photo,function(i,myresult){
+apiurl_size = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=ca370d51a054836007519a00ff4ce59e&photo_id="+myresult.id+"&format=json&nojsoncallback=1";
+$.getJSON(apiurl_size,function(size){
+$.each(size.sizes.size,function(i,myresult_size){
+if(myresult_size.width==500){
+flag="1";
+$("#results").append('<p id="ptag"><a href="'+myresult_size.url+'" target="_blank"><img src="'+myresult_size.source+'"/></a></p>');
+}
+})
+})
+});
+});
+});
+});
+</script>
+</head>
+<body>
+<div class="container">
+<div class="row">
+<div class="col-md-14">
+<h2>Fill in the keyword to fetch images</h2>
+</div>
+</div>
+<div class="row">
+<input type="text" name="query" id="q">
+<div class="col-md-14">
+<h2>Hit This button to fetch photos</h2>
+<button type="button" class="btn btn-success" id="button">Get recent images</button>
+<hr>
+</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+<div id="results"></div>
+</div>
+</div>
+</div>
+</body>
+</html>
